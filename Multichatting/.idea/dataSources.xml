@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="ChattingDB@chatting.cx3635ohpt8d.ap-northeast-2.rds.amazonaws.com" uuid="784f089e-f2bf-40e1-9a74-0f08d11ed785">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://chatting.cx3635ohpt8d.ap-northeast-2.rds.amazonaws.com:3306/ChattingDB</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+  </component>
+</project>
