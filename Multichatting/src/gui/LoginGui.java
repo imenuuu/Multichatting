@@ -8,11 +8,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class LoginScreen extends JFrame {
+public class LoginGui extends JFrame {
 
 
     UserDao userDao=new UserDao();
-    public LoginScreen() {
+    public LoginGui() {
 
         setTitle("객패개패 채팅프로그램");
 
@@ -138,7 +138,7 @@ public class LoginScreen extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                new JoinScreen();
+                new JoinGui();
                 dispose();  // 현재의 frame을 종료시키는 메서드.
 
             }

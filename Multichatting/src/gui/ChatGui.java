@@ -1,35 +1,35 @@
-package Chatting;
+package gui;
 
 import javax.swing.*;
 import java.awt.*;
 
 
 
-public class ChatClient extends JFrame{
+public class ChatGui extends JFrame{
 
     //채팅방
 
-    JTextField sendTF;
+    public JTextField sendTF;
 
     JLabel la_msg;
 
 
 
-    JTextArea ta;
+    public JTextArea ta;
 
     JScrollPane sp_ta,sp_list;
 
 
 
-    JList<String> li_inwon;
+    public JList<String> li_inwon;
     JButton bt_vote;
-    JButton bt_exit;
+    public JButton bt_exit;
 
 
 
     JPanel p;
 
-    public ChatClient() {
+    public ChatGui() {
 
         setTitle("객패개패팀 채팅프로그램");
 
@@ -94,7 +94,7 @@ public class ChatClient extends JFrame{
 
         add(p);
 
-        setBounds(300,200,550,500);
+        setBounds(300,200,550,550);
 
 
         sendTF.requestFocus();

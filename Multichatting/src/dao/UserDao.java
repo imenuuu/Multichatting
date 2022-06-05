@@ -1,8 +1,10 @@
 package dao;
 
 import model.GetFriendRes;
+import model.GetUserRes;
 import model.UserDto;
 
+import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -149,9 +151,7 @@ public class UserDao {
             if(rs.next()) {
                 id=rs.getInt("id");
                 return id;
-
             }
-            System.out.println(id);
             stmt.close();
             rs.close();
         }catch (SQLException e){
@@ -174,13 +174,6 @@ public class UserDao {
             stmt.setInt(2,friendIdx);
             stmt.executeUpdate();
 
-            addFriendQuery="insert into Friend(userIdx,friendIdx)\n" +
-                    "VALUES(?,?)";
-            stmt =con.prepareStatement(addFriendQuery);
-            stmt.setInt(1,friendIdx);
-            stmt.setInt(2,userIdx);
-            stmt =con.prepareStatement(addFriendQuery);
-            stmt.executeQuery();
 
 
             stmt.close();
@@ -190,6 +183,23 @@ public class UserDao {
             e.printStackTrace();
         }
 
+    }
+    public void addFriendUser(int friendIdx, int userIdx) {
+        String addFriendQuery;
+
+        try {
+            Connection con = DBConnector.getConnection();
+            addFriendQuery="insert into Friend(friendIdx,userIdx)\n" +
+                    "VALUES(?,?)";
+            stmt =con.prepareStatement(addFriendQuery);
+            stmt.setInt(1,userIdx);
+            stmt.setInt(2,friendIdx);
+            stmt.executeUpdate();
+
+            stmt.close();
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
     public ArrayList<GetFriendRes> getFriendList(int userIdx){
         ArrayList<GetFriendRes> resList = new ArrayList<>();
@@ -213,8 +223,127 @@ public class UserDao {
     }
 
 
+    public DefaultTableModel importFriendList(int id, DefaultTableModel model) {
+        String importFriendSql="select u.id,u.userName, u.userLogin from User AS u join Friend AS f ON u.id=f.friendIdx WHERE f.userIdx=? order by u.id asc";
+
+        try {
+            Connection con= DBConnector.getConnection();
+            stmt=con.prepareStatement(importFriendSql);
+            stmt.setInt(1,id);
+            rs=stmt.executeQuery();
+            while(rs.next()){
+                int idx = rs.getInt("id");
+                String name=rs.getString("userName");
+                String status=rs.getString("userLogin");
+
+                Object data[]= {idx,name, status, "", ""};
+                model.addRow(data);
+                System.out.println(idx+name+status);
+            }
+            stmt.close();
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return model;
+    }
 
 
+    public ArrayList<GetUserRes> getFriendInfo(int userId) {
+        String getUserInfoQuery = "";
+        ArrayList<GetUserRes> arr=new ArrayList<>();
+        String readMessageQuery ="select userId,username, lolnickname, lolrank, battlenickname, battlerank, fifanickname, fifarank, starnickname, starrank, overwatchnickname, overwatchrank from User where id=?";
+
+        try {
+            Connection con=DBConnector.getConnection();
+            stmt=con.prepareStatement(readMessageQuery);
+            stmt.setInt(1,userId);
+            rs=stmt.executeQuery();
+            while(rs.next()) {
+                arr.add(new GetUserRes(rs.getString(1),rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
+                        rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getString(10), rs.getString(11), rs.getString(12)));
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return arr;
+
+    }
+
+    public boolean getFriendExists(int userIdx, int friendIdx) {
+        String checkTitleSql="select count(*)'cnt' from Friend where userIdx=? and friendIdx=?";
+
+        try {
+            Connection con= DBConnector.getConnection();
+            stmt=con.prepareStatement(checkTitleSql);
+            stmt.setInt(1,userIdx);
+            stmt.setInt(2,friendIdx);
+            rs=stmt.executeQuery();
+            if(rs.next()){
+                int cnt=rs.getInt("cnt");
+                if(cnt>0){
+                    return true;
+                }
+                System.out.println(cnt);
+            }
+
+            stmt.close();
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void updateUserInfo(GetUserRes getUserRes, int id) {
+        try {
+            Connection con= DBConnector.getConnection();
+            st=con.createStatement();
+            String sql="Update User SET userName=?,lolNickName=?,lolRank=?,battleNickName=?,battleRank=?,fifaNickName=?,\n" +
+                    "                 fifaRank=?,starNickName=?,starRank=?,overWatchNickName=?,overwatchRank=? where User.id=?\n";
+            stmt =con.prepareStatement(sql);
+            stmt.setString(1,getUserRes.getUserName());
+            stmt.setString(2,getUserRes.getLolNickName());
+            stmt.setString(3,getUserRes.getLolRank());
+            stmt.setString(4,getUserRes.getBattleNickName());
+            stmt.setString(5,getUserRes.getBattleRank());
+            stmt.setString(6,getUserRes.getFifaNickName());
+            stmt.setString(7,getUserRes.getFifaRank());
+            stmt.setString(8,getUserRes.getStarNickName());
+            stmt.setString(9,getUserRes.getStarRank());
+            stmt.setString(10,getUserRes.getOverNickName());
+            stmt.setString(11,getUserRes.getOverwatchRank());
+            stmt.setInt(12,id);
+            stmt.executeUpdate();
+
+            st.close();
+            stmt.close();
 
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getUserId(int userIdx) {
+        String getUserNameQuery="select userId from User where userId=?";
+        String userId="";
+        try{
+            Connection con=DBConnector.getConnection();
+            stmt =con.prepareStatement(getUserNameQuery);
+            stmt.setInt(1,userIdx);
+            rs= stmt.executeQuery();
+            if(rs.next()) {
+                userId=rs.getString("userName");
+                return userId;
+
+            }
+            System.out.println(userId);
+            stmt.close();
+            rs.close();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return userId;
+    }
 }

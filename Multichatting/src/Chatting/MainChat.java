@@ -2,8 +2,10 @@ package Chatting;
 
 import dao.ChatDao;
 import dao.UserDao;
+import gui.ChatGui;
+import gui.FriendListGui;
 import model.ChatMessageDto;
-import gui.LoginScreen;
+import gui.LoginGui;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -32,7 +34,7 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
     JPanel p;
 
-    ChatClient cc;
+    ChatGui cc;
 
 
 
@@ -69,7 +71,7 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
     ChatRoomInfo chatRoomInfo=new ChatRoomInfo();
     UserInfo userInfo=new UserInfo();
     public MainChat(String myName, String myId, int id) {
-        setTitle("메인화면 접속자");
+        setTitle("객패개패팀 채팅프로그램");
 
 
         userInfo.id=id;
@@ -78,7 +80,7 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
 
 
-        cc = new ChatClient();
+        cc = new ChatGui();
 
         roomInfo = new JList<String>();
 
@@ -122,7 +124,7 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
         waitInfo = new JList<String>();
 
-        waitInfo.setBorder(new TitledBorder("메인화면 정보"));
+        waitInfo.setBorder(new TitledBorder("메인화면 접속자"));
 
 
 
@@ -179,10 +181,16 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
         p.add(bt_exit);
 
 
+        JTabbedPane tabbedPane = new JTabbedPane();
+        FriendListGui friendPanel=new FriendListGui(id);
 
-        add(p);
+        tabbedPane.addTab("메인화면",p);
 
-        setBounds(300,200, 500, 500);
+        tabbedPane.addTab("친구목록",friendPanel);
+
+        this.add(tabbedPane);
+
+        setBounds(400,200, 500, 550);
 
         setVisible(true);
 
@@ -218,7 +226,7 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
 
 
-        //대화방(Chatting.ChatClient)
+        //대화방(gui.ChatClient)
 
         cc.sendTF.addActionListener(this);
 
@@ -534,7 +542,7 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
     public static void main(String[] args) {
 
-        new LoginScreen();
+        new LoginGui();
 
     }
 

@@ -1,6 +1,11 @@
 package model;
 
 public class GetUserRes {
+    public String getUserId() {
+        return userId;
+    }
+
+    public String userId;
     private String userName;
     private String lolNickName;
     private String lolRank;
@@ -101,7 +106,8 @@ public class GetUserRes {
 
     private String overNickName;
     private String overwatchRank;
-    public GetUserRes(String userName, String lolNickName, String lolRank, String battleNickName, String battleRank, String fifaNickName, String fifaRank, String starNickName, String starRank, String overNickName, String overwatchRank) {
+    public GetUserRes(String userId, String userName, String lolNickName, String lolRank, String battleNickName, String battleRank, String fifaNickName, String fifaRank, String starNickName, String starRank, String overNickName, String overwatchRank) {
+        this.userId=userId;
         this.userName = userName;
         this.lolNickName = lolNickName;
         this.lolRank = lolRank;
@@ -114,4 +120,5 @@ public class GetUserRes {
         this.overNickName = overNickName;
         this.overwatchRank = overwatchRank;
     }
+
 }

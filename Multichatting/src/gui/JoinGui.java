@@ -8,10 +8,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class JoinScreen extends JFrame {
+public class JoinGui extends JFrame {
     String choice = null;
 
-    public JoinScreen() {
+    public JoinGui() {
 
         setTitle("객패개패 채팅프로그램");
 
@@ -210,7 +210,7 @@ public class JoinScreen extends JFrame {
                     userDao.UserJoin(userDto);
                     JOptionPane.showMessageDialog
                             (null, "회원가입 완료 되었습니다.");
-                    new LoginScreen();
+                    new LoginGui();
                     dispose();
                 }
 
@@ -226,7 +226,7 @@ public class JoinScreen extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                new LoginScreen();
+                new LoginGui();
                 dispose();
 
             }

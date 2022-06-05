@@ -2,6 +2,7 @@ package Chatting;
 
 import dao.ChatDao;
 import model.ChatRoomDto;
+import model.Room;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -13,6 +14,8 @@ import java.util.Vector;
 
 public class Server implements Runnable{
 
+
+
     //Server클래스: 소켓을 통한 접속서비스, 접속클라이언트 관리
 
 
@@ -21,7 +24,7 @@ public class Server implements Runnable{
 
     Vector<Controller> waitV;//대기실 사용자
 
-    Vector<Room> roomV;//개설된 대화방 Chatting.Room-vs(Vector) : 대화방사용자
+    Vector<Room> roomV;//개설된 대화방 model.Room-vs(Vector) : 대화방사용자
     ChatDao chatDao=new ChatDao();
     Room myRoom;
 
@@ -91,7 +94,7 @@ public class Server implements Runnable{
 
 
         } catch(SocketException se){
-            System.out.println("사용자와의 접속이 끊겼습니다.");
+            se.printStackTrace();
         } catch (IOException e) {
 
             e.printStackTrace();

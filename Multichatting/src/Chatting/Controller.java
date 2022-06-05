@@ -1,6 +1,6 @@
 package Chatting;
 
-import dao.ChatDao;
+import model.Room;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,7 +17,6 @@ public class Controller extends Thread{
     //Chatting.Service == 접속 클라이언트 한명!!
 
 
-    ChatDao chatDao=new ChatDao();
     Room myRoom;//클라이언트가 입장한 대화방
 
 
@@ -35,7 +34,7 @@ public class Controller extends Thread{
 
     Vector<Controller> waitV;//대기실 사용자
 
-    Vector<Room> roomV;//개설된 대화방 Chatting.Room-vs(Vector) : 대화방사용자
+    Vector<Room> roomV;//개설된 대화방 model.Room-vs(Vector) : 대화방사용자
 
 
 
@@ -125,6 +124,10 @@ public class Controller extends Thread{
                             allV.add(this);//전체사용자에 등록
 
                             waitV.add(this);//대기실사용자에 등록
+
+
+
+
 
 
 
@@ -304,6 +307,7 @@ public class Controller extends Thread{
         }
 
     }//run
+
 
 
 
