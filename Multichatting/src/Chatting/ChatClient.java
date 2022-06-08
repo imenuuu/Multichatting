@@ -2,10 +2,8 @@ package Chatting;
 
 import dao.ChatDao;
 import dao.UserDao;
-import gui.ChatGui;
-import gui.FriendListGui;
-import model.ChatMessageDto;
-import gui.LoginGui;
+import gui.*;
+import model.GetChatMessageRes;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -22,7 +20,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 
-public class MainChat extends JFrame implements ActionListener, Runnable{
+public class ChatClient extends JFrame implements ActionListener, Runnable{
 
     JList<String> roomInfo,roomInwon,waitInfo;
 
@@ -36,30 +34,34 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
     ChatGui cc;
 
+    FriendListGui friendPanel;
+
+    ChatGui cg;
 
 
     //소켓 입출력객체
 
-    BufferedReader in;
+    static BufferedReader in;
 
-    OutputStream out;
+    static OutputStream out;
 
 
 
     String selectedRoom;
 
 
+    ImageIcon icon;
 
     UserDao userDao=new UserDao();
     ChatDao chatDao=new ChatDao();
 
-    public class UserInfo{
-        int id;
+    public static class UserInfo{
+        public int id;
         String userId;
-        String userName;
+        public String userName;
     }
-    public class ChatRoomInfo{
-        int id;
+    public static class ChatRoomInfo{
+        public int id;
         String roomName;
     }
     public class ChatRoomJoin{
@@ -70,9 +72,10 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
     ChatRoomJoin chatRoomJoin=new ChatRoomJoin();
     ChatRoomInfo chatRoomInfo=new ChatRoomInfo();
     UserInfo userInfo=new UserInfo();
-    public MainChat(String myName, String myId, int id) {
+    public ChatClient(String myName, String myId, int id) {
         setTitle("객패개패팀 채팅프로그램");
 
+        icon = new ImageIcon("img/main.png"); //이미지 불러오기
 
         userInfo.id=id;
         userInfo.userId=myId;
@@ -80,7 +83,8 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
 
 
-        cc = new ChatGui();
+        cc = new ChatGui(id);
+        cg=new ChatGui(id);
 
         roomInfo = new JList<String>();
 
@@ -118,21 +122,10 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
 
 
-        roomInwon = new JList<String>();
-
-        roomInwon.setBorder(new TitledBorder("입장중인 인원"));
-
-        waitInfo = new JList<String>();
-
-        waitInfo.setBorder(new TitledBorder("메인화면 접속자"));
-
 
 
         sp_roomInfo = new JScrollPane(roomInfo);
 
-        sp_roomInwon = new JScrollPane(roomInwon);
-
-        sp_waitInfo = new JScrollPane(waitInfo);
 
 
 
@@ -140,7 +133,11 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
         bt_enter = new JButton("방 입장");
 
-        bt_exit = new JButton("시스템 종료");
+        bt_exit = new JButton("로그아웃");
+
+
+
+
 
 
 
@@ -148,19 +145,17 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
 
 
-        sp_roomInfo.setBounds(10, 10, 300, 300);
-
-        sp_roomInwon.setBounds(320, 10, 150, 300);
-
-        sp_waitInfo.setBounds(10, 320, 300, 130);
+        sp_roomInfo.setBounds(10, 10, 460, 400);
 
 
 
-        bt_create.setBounds(320,330,150,30);
 
-        bt_enter.setBounds(320,370,150,30);
 
-        bt_exit.setBounds(320,410,150,30);
+        bt_create.setBounds(10,410,130,30);
+
+        bt_enter.setBounds(170,410,130,30);
+
+        bt_exit.setBounds(330,410,130,30);
 
 
 
@@ -170,9 +165,7 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
         p.add(sp_roomInfo);
 
-        p.add(sp_roomInwon);
 
-        p.add(sp_waitInfo);
 
         p.add(bt_create);
 
@@ -182,15 +175,15 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
 
         JTabbedPane tabbedPane = new JTabbedPane();
-        FriendListGui friendPanel=new FriendListGui(id);
+        tabbedPane.setBackground(Color.gray);
+        FriendListGui friendPanel=new FriendListGui(id,userInfo.userName);
 
         tabbedPane.addTab("메인화면",p);
 
         tabbedPane.addTab("친구목록",friendPanel);
-
         this.add(tabbedPane);
 
-        setBounds(400,200, 500, 550);
+        setBounds(400,200, 500, 510);
 
         setVisible(true);
 
@@ -230,8 +223,15 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
         cc.sendTF.addActionListener(this);
 
-
         cc.bt_exit.addActionListener(this);
+        cc.bt_addVote.addActionListener(this);
+        cc.bt_voteList.addActionListener(this);
+
+        cg.sendTF.addActionListener(this);
+
+        cg.bt_exit.addActionListener(this);
+        cg.bt_addVote.addActionListener(this);
+        cg.bt_voteList.addActionListener(this);
 
     }
 
@@ -275,7 +275,9 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
                     setVisible(false);
 
+                    cc.ta.setText("");
                     cc.setVisible(true); //대화방이동
+                    cc.chatRoomId=chatRoomInfo.id;
                     chatDao.insertRoom(userInfo.id, chatRoomInfo.id);
                     chatDao.increateRoomCount(chatRoomInfo.id);
                     break;
@@ -295,6 +297,7 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
                 JOptionPane.showMessageDialog(this, "방을 선택!!");
 
+
                 return;
 
             }
@@ -310,21 +313,22 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
             chatRoomInfo.id=chatDao.getIdByTitle(title);
 
-
+            cc.chatRoomId=chatRoomInfo.id;
 
             sendMsg("175|");//대화방내 인원정보 요청
 
             setVisible(false);
 
+            cc.ta.setText("");
             cc.setVisible(true);
             chatDao.insertRoom(userInfo.id,chatRoomInfo.id);
-            ArrayList<ChatMessageDto> arr;
+            ArrayList<GetChatMessageRes> arr;
             arr=chatDao.readMessage(chatRoomInfo.id);
 
             chatDao.increateRoomCount(chatRoomInfo.id);
 
-            for(ChatMessageDto chatMessageDto:arr){
-                cc.ta.append("["+chatMessageDto.getName()+"]▶ "+chatMessageDto.getMessage());
+            for(GetChatMessageRes getChatMessageRes :arr){
+                cc.ta.append("["+ getChatMessageRes.getName()+"]▶ "+ getChatMessageRes.getMessage());
                 cc.ta.append("\n");
 
             }
@@ -335,19 +339,17 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
             sendMsg("400|");
 
-
-
             cc.setVisible(false);
 
             setVisible(true);
             chatDao.exitRoom(userInfo.id,chatRoomInfo.id);
             chatDao.decreateRoomCount(chatRoomInfo.id);
 
-        }else if(ob==cc.sendTF){//(TextField입력)메시지 보내기 요청
+        }
+        else if(ob==cc.sendTF){//(TextField입력)메시지 보내기 요청
 
             String msg = cc.sendTF.getText();
             chatDao.insertMessage(chatRoomInfo.id,userInfo.id,msg);
-
 
             if(msg.length()>0){
 
@@ -358,13 +360,17 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
             }
 
         }
-
-
-
+        else if (ob == cc.bt_addVote) {
+            new AddVoteGui(userInfo.id,chatRoomInfo.id);
+        }
+        else if (ob==cc.bt_voteList){
+            new VoteListGui(userInfo.id,chatRoomInfo.id);
+        }
         else if(ob==bt_exit){//나가기(프로그램종료) 요청
             chatDao.exitRoom(userInfo.id,chatRoomInfo.id);
             userDao.userLogOut(userInfo.userId);
-            System.exit(0);//현재 응용프로그램 종료하기
+            dispose();
+            new LoginGui();
 
         }
 
@@ -374,7 +380,7 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
 
 
-    public void connect(){//(소켓)서버연결 요청
+    public static void connect(){//(소켓)서버연결 요청
 
         try {
 
@@ -400,7 +406,7 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
 
 
-    public String sendMsg(String msg){//서버에게 메시지 보내기
+    public static String sendMsg(String msg){//서버에게 메시지 보내기
 
         try {
 
@@ -436,10 +442,8 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
                 String protocol = msgs[0];
 
                 switch(protocol){
-
                     case "300":
                         cc.ta.append(msgs[1]+"\n");
-
                         cc.ta.setCaretPosition(cc.ta.getText().length());
 
                         break;
@@ -468,10 +472,6 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
 
 
 
-
-
-
-
                     case "175"://(대화방에서) 대화방 인원정보
 
                         String[] myRoomInwons = msgs[1].split(",");
@@ -481,19 +481,7 @@ public class MainChat extends JFrame implements ActionListener, Runnable{
                         break;
 
 
-
-                    case "180"://대기실 인원정보
-
-                        String[] waitNames = msgs[1].split(",");
-
-                        waitInfo.setListData(waitNames);
-
-                        break;
-
-
-
                     case "200"://대화방 입장
-                        cc.ta.setText("");
 
                         cc.ta.append("");
 

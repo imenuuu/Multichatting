@@ -1,6 +1,6 @@
 package model;
 
-public class UserDto {
+public class User {
     private String userId;
     private String password;
     private String userName;
@@ -121,7 +121,7 @@ public class UserDto {
 
 
 
-    public UserDto(String userId, String password, String userName, String lolNickName, String lolRank, String battleNickName, String battleRank, String fifaNickName, String fifaRank, String starNickName, String starRank, String overNickName, String overwatchRank) {
+    public User(String userId, String password, String userName, String lolNickName, String lolRank, String battleNickName, String battleRank, String fifaNickName, String fifaRank, String starNickName, String starRank, String overNickName, String overwatchRank) {
         this.userId = userId;
         this.password = password;
         this.userName = userName;

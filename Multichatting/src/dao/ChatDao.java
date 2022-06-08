@@ -1,7 +1,7 @@
 package dao;
 
-import model.ChatMessageDto;
-import model.ChatRoomDto;
+import model.GetChatMessageRes;
+import model.GetRoomRes;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class ChatDao {
             st.close();
             pstmt.close();
             rs.close();
-
+            con.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -57,6 +57,7 @@ public class ChatDao {
             int r=pstmt.executeUpdate();
             st.close();
             pstmt.close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -76,7 +77,7 @@ public class ChatDao {
 
             st.close();
             pstmt.close();
-
+            con.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -100,7 +101,7 @@ public class ChatDao {
 
         pstmt.close();
         rs.close();
-
+            con.close();
 
     } catch (SQLException e) {
         e.printStackTrace();
@@ -123,7 +124,7 @@ public class ChatDao {
 
             st.close();
             pstmt.close();
-
+            con.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -144,19 +145,20 @@ public class ChatDao {
                 if(cnt>0){
                     return true;
                 }
-                System.out.println(cnt);
+
             }
 
             pstmt.close();
             rs.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    public ArrayList<ChatMessageDto> readMessage(int id) {
-        ArrayList<ChatMessageDto> arr = new ArrayList<>();
+    public ArrayList<GetChatMessageRes> readMessage(int id) {
+        ArrayList<GetChatMessageRes> arr = new ArrayList<>();
         String readMessageQuery ="select userName,CM.content from User join ChatMessage CM on User.id = CM.userIdx\n" +
                 "join ChatRoom CR on CR.id = CM.chatRoomIdx where chatRoomIdx=? order by CM.messageCreatedDate asc";
 
@@ -166,27 +168,28 @@ public class ChatDao {
             pstmt.setInt(1,id);
             rs=pstmt.executeQuery();
             while(rs.next()){
-                arr.add(new ChatMessageDto(rs.getString(1),rs.getString(2)));
+                arr.add(new GetChatMessageRes(rs.getString(1),rs.getString(2)));
             }
-            System.out.println(arr);
+            pstmt.close();
+            rs.close();
+            con.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
         return arr;
     }
 
-    public Vector<ChatRoomDto> getRoomList() {
-        Vector<ChatRoomDto> arr = new Vector<>();
-        String getRoomListQuery ="select id,roomName,count,boss from ChatRoom";
-        System.out.println(arr);
+    public Vector<GetRoomRes> getRoomList() {
+        Vector<GetRoomRes> arr = new Vector<>();
+        String getRoomListQuery ="select id,roomName,count,boss from ChatRoom where roomName NOT IN('1:1 채팅')";
         try {
             Connection con=DBConnector.getConnection();
             pstmt=con.prepareStatement(getRoomListQuery);
             rs=pstmt.executeQuery();
             while(rs.next()){
-                arr.add(new ChatRoomDto(rs.getInt(1),rs.getString(2),rs.getInt(3),rs.getString(4)));
+                arr.add(new GetRoomRes(rs.getInt(1),rs.getString(2),rs.getInt(3),rs.getString(4)));
             }
-
+            con.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -205,6 +208,7 @@ public class ChatDao {
             pstmt.close();
 
 
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -221,7 +225,7 @@ public class ChatDao {
             st.close();
             pstmt.close();
 
-
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

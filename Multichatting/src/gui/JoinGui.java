@@ -1,7 +1,7 @@
 package gui;
 
 import dao.UserDao;
-import model.UserDto;
+import model.User;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,18 +9,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class JoinGui extends JFrame {
-    String choice = null;
-
     public JoinGui() {
 
         setTitle("객패개패 채팅프로그램");
-
+        JPanel title = new JPanel();
+        title.setBackground(Color.gray);
         // 1. 컴포넌트들을 만들어 보자.
-        JLabel title =
+        JLabel joinL =
                 new JLabel("회원가입", JLabel.CENTER);
+        joinL.setBackground(Color.gray);
 
-
-        title.setFont(new Font("휴먼모음", Font.BOLD, 30));
+        joinL.setFont(new Font("휴먼모음", Font.BOLD, 30));
+        title.add(joinL);
         JButton checkId=new JButton("아이디 중복확인");
 
         JButton join = new JButton("회원가입");
@@ -47,76 +47,86 @@ public class JoinGui extends JFrame {
         idPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         idPanel.add(new JLabel("아이디 : "));
         idPanel.add(id);
-
+        idPanel.setBackground(Color.gray);
 
         JPanel pwdPanel = new JPanel();
         pwdPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         pwdPanel.add(new JLabel("비밀번호 : "));
         pwdPanel.add(pwd);
-
+        pwdPanel.setBackground(Color.gray);
 
         JPanel namePanel = new JPanel();
         namePanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         namePanel.add(new JLabel("이    름 : "));
         namePanel.add(name);
-
+        namePanel.setBackground(Color.gray);
 
         JPanel lolNickNamePanel = new JPanel();
         lolNickNamePanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         lolNickNamePanel.add(new JLabel("롤 닉네임 : "));
         lolNickNamePanel.add(lolNickName);
+        lolNickNamePanel.setBackground(Color.gray);
 
         JPanel lolRankPanel = new JPanel();
         lolRankPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         lolRankPanel.add(new JLabel("롤 랭크 : "));
         lolRankPanel.add(lolRank);
+        lolRankPanel.setBackground(Color.gray);
 
         JPanel battleNickNamePanel = new JPanel();
         battleNickNamePanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         battleNickNamePanel.add(new JLabel("배틀그라운드 닉네임 : "));
         battleNickNamePanel.add(battleNickName);
+        battleNickNamePanel.setBackground(Color.gray);
 
         JPanel battleRankPanel = new JPanel();
         battleRankPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         battleRankPanel.add(new JLabel("배틀그라운드 랭크 : "));
         battleRankPanel.add(battleRank);
+        battleRankPanel.setBackground(Color.gray);
 
         JPanel fifaNickNamePanel = new JPanel();
         fifaNickNamePanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         fifaNickNamePanel.add(new JLabel("피파3 닉네임 : "));
         fifaNickNamePanel.add(fifaNickName);
+        fifaNickNamePanel.setBackground(Color.gray);
 
         JPanel fifaRankPanel = new JPanel();
         fifaRankPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         fifaRankPanel.add(new JLabel("피파3 랭크 : "));
         fifaRankPanel.add(fifaRank);
+        fifaRankPanel.setBackground(Color.gray);
 
         JPanel starNickNamePanel = new JPanel();
         starNickNamePanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         starNickNamePanel.add(new JLabel("스타크래프트 닉네임 : "));
         starNickNamePanel.add(starNickName);
-
+        starNickNamePanel.setBackground(Color.gray);
 
 
         JPanel starRankPanel = new JPanel();
         starRankPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         starRankPanel.add(new JLabel("스타크래프트 랭크 : "));
         starRankPanel.add(starRank);
+        starRankPanel.setBackground(Color.gray);
 
         JPanel overNickNamePanel = new JPanel();
         overNickNamePanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         overNickNamePanel.add(new JLabel("오버워치 닉네임 : "));
         overNickNamePanel.add(overwatchNickName);
+        overNickNamePanel.setBackground(Color.gray);
 
 
         JPanel overwatchRankPanel = new JPanel();
         overwatchRankPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         overwatchRankPanel.add(new JLabel("오버워치 랭크 : "));
         overwatchRankPanel.add(overwatchRank);
+        overwatchRankPanel.setBackground(Color.gray);
 
 
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new GridLayout(14, 1));
+        formPanel.setBackground(Color.gray);
         formPanel.add(idPanel);
         formPanel.add(pwdPanel);
         formPanel.add(namePanel);
@@ -135,12 +145,13 @@ public class JoinGui extends JFrame {
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new FlowLayout());
         contentPanel.add(formPanel);
-
+        contentPanel.setBackground(Color.gray);
         // button panel
         JPanel panel = new JPanel();
         panel.add(checkId);
         panel.add(join);
         panel.add(cancel);
+        panel.setBackground(Color.gray);
 
 
         add(title, BorderLayout.NORTH);
@@ -190,7 +201,7 @@ public class JoinGui extends JFrame {
                 String mystarRank = starRank.getText();
                 String myoverwatchNickName = overwatchNickName.getText();
                 String myoverwatchRank = overwatchRank.getText();
-                UserDto userDto=new UserDto(myId,myPwd,myName,myLolNickName,myLolRank,
+                User user =new User(myId,myPwd,myName,myLolNickName,myLolRank,
                         myBattleNickname,myBattleRank,myfifaNickName,myfifaRank,mystarNickName,mystarRank,myoverwatchNickName,myoverwatchRank);
                 if(id.getText().isEmpty()){
                     JOptionPane.showMessageDialog
@@ -207,7 +218,7 @@ public class JoinGui extends JFrame {
                             (null, "아이디가 중복되었습니다.");
 
                 }else{
-                    userDao.UserJoin(userDto);
+                    userDao.UserJoin(user);
                     JOptionPane.showMessageDialog
                             (null, "회원가입 완료 되었습니다.");
                     new LoginGui();

@@ -4,11 +4,7 @@ import Chatting.ChatController;
 
 import java.util.Vector;
 
-
-
-public class Room {//대화방의 정보표현 객체
-
-
+public class FriendRoom {
     int id;
     public String title;//방제목
     public int count;//방 인원수
@@ -49,15 +45,14 @@ public class Room {//대화방의 정보표현 객체
 
     public Vector<ChatController> userV;//userV: 같은 방에 접속한 Client정보 저장
 
-    public Room(int id, String title, int count, String boss) {
+    public FriendRoom(int id, String title, int count, String boss) {
         this.id=id;
         this.title = title;
         this.count = count;
         this.boss = boss;
     }
 
-    public Room() {
+    public FriendRoom() {
         userV = new Vector<>();
     }
-
 }

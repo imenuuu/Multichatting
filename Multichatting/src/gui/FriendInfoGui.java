@@ -11,12 +11,13 @@ import java.util.ArrayList;
 
 
 public class FriendInfoGui extends JFrame {
+
     UserDao userDao = new UserDao();
     public FriendInfoGui(int userId) {
         ArrayList<GetUserRes> arr;
         arr=userDao.getFriendInfo(userId);
-        System.out.println(arr);
-        setTitle("객패개패 채팅프로그램");
+        String userLoginId=userDao.getUserId(userId);
+        setTitle(userDao.getUserName(userLoginId)+"님 정보");
 
         // 1. 컴포넌트들을 만들어 보자.
         JLabel title =
@@ -43,6 +44,8 @@ public class FriendInfoGui extends JFrame {
 
 
         for(GetUserRes getUserRes : arr) {
+            setTitle(getUserRes.getUserName()+"님 정보");
+
             userPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
             userPanel.add(new JLabel("유저 아이디 : "+getUserRes.getUserId()));
 
@@ -151,6 +154,7 @@ public class FriendInfoGui extends JFrame {
         });
 
     }
+
 
 
 

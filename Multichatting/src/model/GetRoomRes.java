@@ -1,6 +1,6 @@
 package model;
 
-public class ChatRoomDto {
+public class GetRoomRes {
     public int getId() {
         return id;
     }
@@ -33,7 +33,7 @@ public class ChatRoomDto {
         this.boss = boss;
     }
 
-    public ChatRoomDto(int id, String title, int count, String boss) {
+    public GetRoomRes(int id, String title, int count, String boss) {
         this.id = id;
         this.title = title;
         this.count = count;

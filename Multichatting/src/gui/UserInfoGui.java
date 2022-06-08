@@ -16,8 +16,7 @@ public class UserInfoGui extends JFrame {
             setTitle("객패개패 채팅프로그램");
 
             // 1. 컴포넌트들을 만들어 보자.
-            JLabel title =
-                    new JLabel("내 정보 수정", JLabel.CENTER);
+            JLabel title = new JLabel("내 정보 수정", JLabel.CENTER);
 
 
             title.setFont(new Font("휴먼모음", Font.BOLD, 30));
@@ -41,7 +40,10 @@ public class UserInfoGui extends JFrame {
             JTextField overwatchRank=new JTextField(10);
             JTextField overwatchNickName=new JTextField(10);
             for(GetUserRes getUserRes : arr){
+
                 name=new JTextField(getUserRes.getUserName());
+                setTitle(getUserRes.getUserName()+"님 정보수정");
+                title.setText(getUserRes.getUserName()+"님 정보");
                if(getUserRes.getLolRank().isEmpty()){
                    lolRank= new JTextField(10);
                }
@@ -203,7 +205,7 @@ public class UserInfoGui extends JFrame {
 
             setBounds(200, 200, 300, 500);
 
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 
             setVisible(true);
 

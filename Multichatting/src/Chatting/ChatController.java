@@ -1,5 +1,7 @@
 package Chatting;
 
+import dao.UserDao;
+import model.FriendRoom;
 import model.Room;
 
 import java.io.BufferedReader;
@@ -12,14 +14,14 @@ import java.util.Vector;
 
 
 
-public class Controller extends Thread{
+public class ChatController extends Thread{
 
     //Chatting.Service == 접속 클라이언트 한명!!
 
 
     Room myRoom;//클라이언트가 입장한 대화방
 
-
+    FriendRoom friendRoom;
 
 
     //소켓관련 입출력서비스
@@ -30,13 +32,13 @@ public class Controller extends Thread{
 
 
 
-    Vector<Controller> allV;//모든 사용자(대기실사용자 + 대화방사용자)
+    Vector<ChatController> allV;//모든 사용자(대기실사용자 + 대화방사용자)
 
-    Vector<Controller> waitV;//대기실 사용자
+    Vector<ChatController> waitV;//대기실 사용자
 
     Vector<Room> roomV;//개설된 대화방 model.Room-vs(Vector) : 대화방사용자
 
-
+    Vector<FriendRoom> friendRoomV;
 
 
     Socket s;
@@ -44,10 +46,12 @@ public class Controller extends Thread{
 
 
     String nickName;
+    int userId;
+
+    UserDao userDao=new UserDao();
 
 
-
-    public Controller(Socket s, Server server) {
+    public ChatController(Socket s, Server server) {
 
         allV=server.allV;
 
@@ -55,6 +59,7 @@ public class Controller extends Thread{
 
         roomV=server.roomV;
 
+        friendRoomV=server.friendRoomV;
 
 
 
@@ -121,9 +126,13 @@ public class Controller extends Thread{
                         case "100": //대기실 접속
 
 
+                            userId= Integer.parseInt(msgs[1]);
+
+
                             allV.add(this);//전체사용자에 등록
 
                             waitV.add(this);//대기실사용자에 등록
+
 
 
 
@@ -148,6 +157,9 @@ public class Controller extends Thread{
                             messageWait("180|"+ getWaitInwon());
 
 
+                            break;
+                        case "151": //대화명 입력
+                            nickName=msgs[1];
 
                             break;
 
@@ -170,6 +182,7 @@ public class Controller extends Thread{
                             //대기실----> 대화방 이동!!
 
                             waitV.remove(this);
+
 
                             myRoom.userV.add(this);
 
@@ -217,40 +230,70 @@ public class Controller extends Thread{
 
                             }//for
 
-
-
                             //대기실----> 대화방 이동!!
 
-                            waitV.remove(this);
-
-                            myRoom.userV.add(this);
-
-
-
-                            messageRoom("200|"+nickName);//방인원에게 입장 알림
+                                waitV.remove(this);
+                                myRoom.userV.add(this);
+                                messageRoom("200|"+nickName);//방인원에게 입장 알림
 
 
 
-                            //들어갈 방의 title전달
+                                //들어갈 방의 title전달
 
-                            messageTo("202|"+ myRoom.title);
+                                messageTo("202|"+ myRoom.title);
 
 
 
-                            messageWait("160|"+ getRoomInfo());
+                                messageWait("160|"+ getRoomInfo());
 
-                            messageWait("180|"+ getWaitInwon());
+                                messageWait("180|"+ getWaitInwon());
+
+
+
+
 
                             break;
+                        case "203":
+
+                            for (FriendRoom r : friendRoomV) {//방이름 찾기!!
+                                System.out.println("방제목:"+r.title);
+                                if (r.title.equals(msgs[1])) {//일치하는 방 찾음!!
+
+                                    friendRoom = r;
+
+                                    friendRoom.count++;//인원수 1증가
+
+                                    break;
+
+                                }
+
+                            }//for
 
 
+                            friendRoom.userV.add(this);
+                            friendRoom("203|"+nickName);
+                            messageTo("202|"+ friendRoom.title);
 
+                            break;
+                            /*
+                        case "205":
+                            userId= msgs[1];
+                            System.out.println(userId);
+                            int id=userDao.getUserPK(userId);
+                            messageWait("205|"+ getFriend(id));
+                            break;
+
+*/
+                        case "201":
+                            messageRoom("201"+nickName);
+                            break;
                         case "300": //메시지
-
                             messageRoom("300|["+nickName +"]▶ "+msgs[1]);
-
                             //클라이언트에게 메시지 보내기
-
+                            break;
+                        case "301": //메시지
+                            friendRoom("301|["+nickName +"]▶ "+msgs[1]);
+                            //클라이언트에게 메시지 보내기
                             break;
 
 
@@ -286,6 +329,35 @@ public class Controller extends Thread{
 
 
                             break;
+                        case "401": //대화방 퇴장
+
+                            friendRoom.count--;//인원수 감소
+
+
+
+                            friendRoom("401|"+nickName);//방인원들에게 퇴장 알림!!
+
+
+
+                            //대화방----> 대기실 이동!!
+
+                            friendRoom.userV.remove(this);
+
+                            waitV.add(this);
+
+
+
+                            //대화방 퇴장후 방인원 다시출력
+
+
+                            //대기실에 방정보 다시출력
+
+                            break;
+
+
+
+
+
 
 
 
@@ -343,7 +415,7 @@ public class Controller extends Thread{
 
             //"길동,라임,주원"
 
-            Controller ser= myRoom.userV.get(i);
+            ChatController ser= myRoom.userV.get(i);
 
             str += ser.nickName;
 
@@ -373,7 +445,7 @@ public class Controller extends Thread{
 
                 for(int j=0; j<room.userV.size(); j++){
 
-                    Controller ser= room.userV.get(j);
+                    ChatController ser= room.userV.get(j);
 
                     str += ser.nickName;
 
@@ -401,7 +473,7 @@ public class Controller extends Thread{
 
             //"길동,라임,주원"
 
-            Controller ser= waitV.get(i);
+            ChatController ser= waitV.get(i);
 
             str += ser.nickName;
 
@@ -411,8 +483,31 @@ public class Controller extends Thread{
 
         return str;
 
-    }//getWaitInwon
 
+    }
+
+    //getWaitInwon
+    /*
+    UserDao userDao=new UserDao();
+    public String getFriend(int id){
+        String str="";
+        Vector<Controller> friendV = userDao.getFriend(id);
+        for(int i=0; i<friendV.size(); i++){
+
+            //"길동,라임,주원"
+
+            Controller ser= friendV.get(i);
+
+            str += ser.n;
+
+            if(i<friendV.size()-1)str += ",";
+
+        }
+
+        System.out.println(str);
+        return str;
+    }
+*/
 
 
     public void messageAll(String msg){//전체사용자
@@ -421,11 +516,11 @@ public class Controller extends Thread{
 
         for(int i=0; i<allV.size(); i++){//벡터 인덱스
 
-            Controller controller = allV.get(i); //각각의 클라이언트 얻어오기
+            ChatController chatController = allV.get(i); //각각의 클라이언트 얻어오기
 
             try {
 
-                controller.messageTo(msg);
+                chatController.messageTo(msg);
 
             } catch (IOException e) {
 
@@ -447,11 +542,11 @@ public class Controller extends Thread{
 
         for(int i=0; i<waitV.size(); i++){//벡터 인덱스
 
-            Controller controller = waitV.get(i); //각각의 클라이언트 얻어오기
+            ChatController chatController = waitV.get(i); //각각의 클라이언트 얻어오기
 
             try {
 
-                controller.messageTo(msg);
+                chatController.messageTo(msg);
 
             } catch (IOException e) {
 
@@ -473,11 +568,11 @@ public class Controller extends Thread{
 
         for(int i=0; i< myRoom.userV.size(); i++){//벡터 인덱스
 
-            Controller controller = myRoom.userV.get(i); //각각의 클라이언트 얻어오기
+            ChatController chatController = myRoom.userV.get(i); //각각의 클라이언트 얻어오기
 
             try {
 
-                controller.messageTo(msg);
+                chatController.messageTo(msg);
 
             } catch (IOException e) {
 
@@ -492,6 +587,29 @@ public class Controller extends Thread{
         }
 
     }//messageAll
+
+    public void friendRoom(String msg){
+
+        for(int i=0; i< friendRoom.userV.size(); i++){//벡터 인덱스
+
+            ChatController chatController = friendRoom.userV.get(i); //각각의 클라이언트 얻어오기
+
+            try {
+
+                chatController.messageTo(msg);
+
+            } catch (IOException e) {
+
+                //에러발생 ---> 클라이언트 접속 끊음!!
+
+                friendRoom.userV.remove(i--); //접속 끊긴 클라이언트를 벡터에서 삭제!!
+
+                System.out.println("클라이언트 접속 끊음!!");
+
+            }
+
+        }
+    }
 
 
 

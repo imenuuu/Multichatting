@@ -2,7 +2,7 @@ package dao;
 
 import model.GetFriendRes;
 import model.GetUserRes;
-import model.UserDto;
+import model.User;
 
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
@@ -28,6 +28,7 @@ public class UserDao {
             }
             stmt.close();
             rs.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -43,6 +44,7 @@ public class UserDao {
             stmt.executeUpdate();
             st.close();
             stmt.close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -50,7 +52,6 @@ public class UserDao {
     }
     public void userLogOut(String userId) {
         try{
-            System.out.println(userId);
             Connection con = DBConnector.getConnection();
             st=con.createStatement();
             String sql="update User SET userLogin='로그아웃' where userId=?";
@@ -59,11 +60,12 @@ public class UserDao {
             stmt.executeUpdate();
             st.close();
             stmt.close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    public void UserJoin(UserDto userDto){
+    public void UserJoin(User user){
         try {
             Connection con= DBConnector.getConnection();
             st=con.createStatement();
@@ -71,19 +73,19 @@ public class UserDao {
                     "                 fifaRank,starNickName,starRank,overWatchNickName,overwatchRank)\n" +
                     "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
             stmt =con.prepareStatement(sql);
-            stmt.setString(1,userDto.getUserId());
-            stmt.setString(2,userDto.getPassword());
-            stmt.setString(3,userDto.getUserName());
-            stmt.setString(4,userDto.getLolNickName());
-            stmt.setString(5,userDto.getLolRank());
-            stmt.setString(6,userDto.getBattleNickName());
-            stmt.setString(7,userDto.getBattleRank());
-            stmt.setString(8,userDto.getFifaNickName());
-            stmt.setString(9,userDto.getFifaRank());
-            stmt.setString(10,userDto.getStarNickName());
-            stmt.setString(11,userDto.getStarRank());
-            stmt.setString(12,userDto.getOverNickName());
-            stmt.setString(13,userDto.getOverwatchRank());
+            stmt.setString(1, user.getUserId());
+            stmt.setString(2, user.getPassword());
+            stmt.setString(3, user.getUserName());
+            stmt.setString(4, user.getLolNickName());
+            stmt.setString(5, user.getLolRank());
+            stmt.setString(6, user.getBattleNickName());
+            stmt.setString(7, user.getBattleRank());
+            stmt.setString(8, user.getFifaNickName());
+            stmt.setString(9, user.getFifaRank());
+            stmt.setString(10, user.getStarNickName());
+            stmt.setString(11, user.getStarRank());
+            stmt.setString(12, user.getOverNickName());
+            stmt.setString(13, user.getOverwatchRank());
             stmt.executeUpdate();
 
             st.close();
@@ -108,11 +110,11 @@ public class UserDao {
                 if(cnt>0){
                     return true;
                 }
-                System.out.println(cnt);
             }
 
             stmt.close();
             rs.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -132,9 +134,9 @@ public class UserDao {
                 return myName;
 
             }
-            System.out.println(myName);
             stmt.close();
             rs.close();
+            con.close();
         }catch (SQLException e){
             e.printStackTrace();
         }
@@ -154,6 +156,7 @@ public class UserDao {
             }
             stmt.close();
             rs.close();
+            con.close();
         }catch (SQLException e){
             e.printStackTrace();
         }
@@ -177,7 +180,7 @@ public class UserDao {
 
 
             stmt.close();
-
+            con.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -195,7 +198,7 @@ public class UserDao {
             stmt.setInt(1,userIdx);
             stmt.setInt(2,friendIdx);
             stmt.executeUpdate();
-
+            con.close();
             stmt.close();
         }catch (SQLException e) {
             e.printStackTrace();
@@ -216,6 +219,7 @@ public class UserDao {
             }
             stmt.close();
             rs.close();
+            con.close();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
@@ -224,7 +228,7 @@ public class UserDao {
 
 
     public DefaultTableModel importFriendList(int id, DefaultTableModel model) {
-        String importFriendSql="select u.id,u.userName, u.userLogin from User AS u join Friend AS f ON u.id=f.friendIdx WHERE f.userIdx=? order by u.id asc";
+        String importFriendSql="select u.userId,u.userName, u.userLogin from User AS u join Friend AS f ON u.id=f.friendIdx WHERE f.userIdx=? order by u.id asc";
 
         try {
             Connection con= DBConnector.getConnection();
@@ -232,16 +236,16 @@ public class UserDao {
             stmt.setInt(1,id);
             rs=stmt.executeQuery();
             while(rs.next()){
-                int idx = rs.getInt("id");
+                String userId = rs.getString("userId");
                 String name=rs.getString("userName");
                 String status=rs.getString("userLogin");
 
-                Object data[]= {idx,name, status, "", ""};
+                Object data[]= {userId,name, status, "", ""};
                 model.addRow(data);
-                System.out.println(idx+name+status);
             }
             stmt.close();
             rs.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -252,17 +256,20 @@ public class UserDao {
     public ArrayList<GetUserRes> getFriendInfo(int userId) {
         String getUserInfoQuery = "";
         ArrayList<GetUserRes> arr=new ArrayList<>();
-        String readMessageQuery ="select userId,username, lolnickname, lolrank, battlenickname, battlerank, fifanickname, fifarank, starnickname, starrank, overwatchnickname, overwatchrank from User where id=?";
+        getUserInfoQuery ="select userId,username, lolnickname, lolrank, battlenickname, battlerank, fifanickname, fifarank, starnickname, starrank, overwatchnickname, overwatchrank from User where id=?";
 
         try {
             Connection con=DBConnector.getConnection();
-            stmt=con.prepareStatement(readMessageQuery);
+            stmt=con.prepareStatement(getUserInfoQuery);
             stmt.setInt(1,userId);
             rs=stmt.executeQuery();
             while(rs.next()) {
                 arr.add(new GetUserRes(rs.getString(1),rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
                         rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getString(10), rs.getString(11), rs.getString(12)));
             }
+            stmt.close();
+            rs.close();
+            con.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -271,11 +278,11 @@ public class UserDao {
     }
 
     public boolean getFriendExists(int userIdx, int friendIdx) {
-        String checkTitleSql="select count(*)'cnt' from Friend where userIdx=? and friendIdx=?";
+        String checkFriendSql="select count(*)'cnt' from Friend where userIdx=? and friendIdx=?";
 
         try {
             Connection con= DBConnector.getConnection();
-            stmt=con.prepareStatement(checkTitleSql);
+            stmt=con.prepareStatement(checkFriendSql);
             stmt.setInt(1,userIdx);
             stmt.setInt(2,friendIdx);
             rs=stmt.executeQuery();
@@ -284,9 +291,8 @@ public class UserDao {
                 if(cnt>0){
                     return true;
                 }
-                System.out.println(cnt);
             }
-
+            con.close();
             stmt.close();
             rs.close();
         } catch (SQLException e) {
@@ -318,7 +324,7 @@ public class UserDao {
 
             st.close();
             stmt.close();
-
+            con.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -338,12 +344,30 @@ public class UserDao {
                 return userId;
 
             }
-            System.out.println(userId);
             stmt.close();
             rs.close();
+            con.close();
         }catch (SQLException e){
             e.printStackTrace();
         }
         return userId;
+    }
+
+
+    public void deleteUser(int friendId, int idx) {
+        try{
+            Connection con = DBConnector.getConnection();
+            st=con.createStatement();
+            String sql="delete from Friend where userIdx=? and friendIdx=?";
+            stmt=con.prepareStatement(sql);
+            stmt.setInt(1,friendId);
+            stmt.setInt(2,idx);
+            int r=stmt.executeUpdate();
+            st.close();
+            stmt.close();
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

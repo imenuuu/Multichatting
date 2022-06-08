@@ -1,6 +1,8 @@
 package model;
 
-public class GetUserRes {
+import gui.FriendListGui;
+
+public class GetUserRes extends FriendListGui {
     public String getUserId() {
         return userId;
     }

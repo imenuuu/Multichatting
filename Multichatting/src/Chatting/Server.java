@@ -1,13 +1,13 @@
 package Chatting;
 
 import dao.ChatDao;
-import model.ChatRoomDto;
+import model.FriendRoom;
+import model.GetRoomRes;
 import model.Room;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.Vector;
 
 
@@ -20,14 +20,17 @@ public class Server implements Runnable{
 
 
 
-    Vector<Controller> allV;//모든 사용자(대기실사용자 + 대화방사용자)
+    Vector<ChatController> allV;//모든 사용자(대기실사용자 + 대화방사용자)
 
-    Vector<Controller> waitV;//대기실 사용자
+    Vector<ChatController> waitV;//대기실 사용자
 
     Vector<Room> roomV;//개설된 대화방 model.Room-vs(Vector) : 대화방사용자
+    Vector<FriendRoom> friendRoomV;
+
+
     ChatDao chatDao=new ChatDao();
     Room myRoom;
-
+    FriendRoom friendRoom;
 
 
     public Server() {
@@ -38,18 +41,23 @@ public class Server implements Runnable{
 
         roomV = new Vector<>();
 
+        friendRoomV=new Vector<>();
 
-        Vector<ChatRoomDto> arr;
+        friendRoom=new FriendRoom();
+        friendRoom.title ="1:1 채팅";//방제목
+        friendRoom.count = 1;
+        friendRoom.boss = "";
+        friendRoomV.add(friendRoom);
+
+        Vector<GetRoomRes> arr;
         arr=chatDao.getRoomList();
-        for (ChatRoomDto chatRoomDto:arr){
+        for (GetRoomRes getRoomRes :arr){
             myRoom=new Room();
-            myRoom.title=chatRoomDto.getTitle();
-            myRoom.count=chatRoomDto.getCount();
-            myRoom.boss=chatRoomDto.getBoss();
+            myRoom.title= getRoomRes.getTitle();
+            myRoom.count= getRoomRes.getCount();
+            myRoom.boss= getRoomRes.getBoss();
             roomV.add(myRoom);
         }
-
-
 
 
 
@@ -83,7 +91,7 @@ public class Server implements Runnable{
 
                 //s: 접속한 클라이언트의 소켓정보
 
-                Controller ser = new Controller(s, this);
+                ChatController ser = new ChatController(s, this);
 
                 //allV.add(ser);//전체사용자에 등록
 
@@ -93,12 +101,8 @@ public class Server implements Runnable{
 
 
 
-        } catch(SocketException se){
+        } catch(IOException se){
             se.printStackTrace();
-        } catch (IOException e) {
-
-            e.printStackTrace();
-
         }
 
     }//run

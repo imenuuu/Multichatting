@@ -1,6 +1,6 @@
 package gui;
 
-import Chatting.MainChat;
+import Chatting.ChatClient;
 import dao.UserDao;
 
 import javax.swing.*;
@@ -17,6 +17,7 @@ public class LoginGui extends JFrame {
         setTitle("객패개패 채팅프로그램");
 
         JPanel title = new JPanel();
+        title.setBackground(Color.gray);
 
         // title 컨테이너에 들어갈 컴포넌트를 만들어 보자.
         JLabel login = new JLabel("로그인 화면");
@@ -39,24 +40,24 @@ public class LoginGui extends JFrame {
         JPanel idPanel =
                 new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JLabel jlb1 = new JLabel("아이디 : ", JLabel.CENTER);
-
         idPanel.add(jlb1);
-
+        idPanel.setBackground(Color.gray);
         JPanel idPanel2 =
                 new JPanel(new FlowLayout(FlowLayout.LEFT));
         JTextField jtf1 = new JTextField(10);
-
+        idPanel2.setBackground(Color.gray);
         idPanel2.add(jtf1);
 
-        jp1.add(idPanel); jp1.add(idPanel2);
+        jp1.add(idPanel);
+        jp1.add(idPanel2);
 
 
         JPanel pwdPanel =
                 new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        pwdPanel.setBackground(Color.gray);
         JLabel jlb2 = new JLabel("비밀번호 : ", JLabel.CENTER);
-
-        JPanel pwdPanel2 =
-                new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel pwdPanel2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        pwdPanel2.setBackground(Color.gray);
         JPasswordField jtf2 = new JPasswordField(10);
 
         pwdPanel.add(jlb2); pwdPanel2.add(jtf2);
@@ -67,17 +68,21 @@ public class LoginGui extends JFrame {
         JPanel loginPanel =
                 new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton jLogin = new JButton("로그인");
+        loginPanel.setBackground(Color.gray);
+
 
         JPanel joinPanel =
                 new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton join = new JButton("회원가입");
-
-        loginPanel.add(jLogin); joinPanel.add(join);
+        joinPanel.setBackground(Color.gray);
+        loginPanel.add(jLogin);
+        joinPanel.add(join);
 
         jp1.add(loginPanel); jp1.add(joinPanel);
 
 
         JPanel jp2 = new JPanel();
+        jp2.setBackground(Color.gray);
         jp2.setLayout(new FlowLayout());
         jp2.add(jp1);
 
@@ -119,7 +124,7 @@ public class LoginGui extends JFrame {
                             (null, "로그인 성공");
                     String myName=userDao.getUserName(myId);
                     int id=userDao.getUserPK(myId);
-                    new MainChat(myName,myId,id);
+                    new ChatClient(myName,myId,id);
                     dispose();
                 }
                 else if(logIn==false) {

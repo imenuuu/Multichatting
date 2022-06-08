@@ -1,9 +1,9 @@
 package model;
 
-public class ChatMessageDto {
+public class GetChatMessageRes {
     private String name;
     private String message;
-    public ChatMessageDto(String name, String message) {
+    public GetChatMessageRes(String name, String message) {
         this.name = name;
         this.message = message;
 
