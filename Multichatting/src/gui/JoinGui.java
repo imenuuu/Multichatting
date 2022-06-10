@@ -1,6 +1,6 @@
 package gui;
 
-import dao.UserDao;
+import Controller.UserController;
 import model.User;
 
 import javax.swing.*;
@@ -164,13 +164,13 @@ public class JoinGui extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setVisible(true);
-        UserDao userDao=new UserDao();
+        UserController userController =new UserController();
 
         checkId.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String myId = id.getText();
-                if(userDao.checkId(myId)){
+                if(userController.checkId(myId)){
                     JOptionPane.showMessageDialog
                             (null, "아이디가 중복되었습니다.");
 
@@ -213,12 +213,12 @@ public class JoinGui extends JFrame {
                     JOptionPane.showMessageDialog
                             (null, "이름을 입력해주세요.");
                 }
-                else if(userDao.checkId(myId)){
+                else if(userController.checkId(myId)){
                     JOptionPane.showMessageDialog
                             (null, "아이디가 중복되었습니다.");
 
                 }else{
-                    userDao.UserJoin(user);
+                    userController.UserJoin(user);
                     JOptionPane.showMessageDialog
                             (null, "회원가입 완료 되었습니다.");
                     new LoginGui();

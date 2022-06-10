@@ -1,7 +1,7 @@
 package gui;
 
-import dao.ChatDao;
-import dao.UserDao;
+import Controller.ChatController;
+import Controller.UserController;
 import model.GetChatMessageRes;
 
 import javax.swing.*;
@@ -36,11 +36,7 @@ public class FriendListGui extends JPanel implements Runnable{
     JLabel idlb;
     JTextField addFriendIDField,updateUserInfoIdfield;
     JButton addFriendButton,updateUserInfoButton,refreshUserInfo, startChatButton, userInfoButton;
-    UserDao userDao = new UserDao();
-
-    public FriendListGui() {
-    }
-
+    UserController userController = new UserController();
 
     //Idx
     public static class UserInfo {
@@ -124,7 +120,7 @@ public class FriendListGui extends JPanel implements Runnable{
             }
         });
 
-        model=userDao.importFriendList(id, model); //친구목록 불러오기
+        model= userController.importFriendList(id, model); //친구목록 불러오기
 
 
         //친구 추가 이벤트 처리
@@ -141,8 +137,8 @@ public class FriendListGui extends JPanel implements Runnable{
                 else {
 
                     userIdx = id;
-                    friendIdx = userDao.getUserPK(friendId);
-                    if(userDao.getFriendExists(userIdx,friendIdx)){
+                    friendIdx = userController.getUserPK(friendId);
+                    if(userController.getFriendExists(userIdx,friendIdx)){
                         JOptionPane.showMessageDialog
                                 (null, "이미 추가한 유저 입니다.");
                         addFriendIDField.setText("");
@@ -153,10 +149,10 @@ public class FriendListGui extends JPanel implements Runnable{
                         addFriendIDField.setText("");
                     }
                     else {
-                        userDao.addFriend(userIdx, friendIdx);
-                        userDao.addFriendUser(friendIdx,userIdx);
+                        userController.addFriend(userIdx, friendIdx);
+                        userController.addFriendUser(friendIdx,userIdx);
                         model.setNumRows(0);
-                        model=userDao.importFriendList(id, model);
+                        model= userController.importFriendList(id, model);
                         JOptionPane.showMessageDialog
                                 (null, "친구 추가에 성공했습니다.");
                         addFriendIDField.setText("");
@@ -169,7 +165,7 @@ public class FriendListGui extends JPanel implements Runnable{
             @Override
             public void actionPerformed(ActionEvent e) {
                 model.setNumRows(0);
-                model=userDao.importFriendList(id, model);
+                model= userController.importFriendList(id, model);
                 JOptionPane.showMessageDialog
                         (null, "새로고침 완료했습니다.");
             }
@@ -180,7 +176,7 @@ public class FriendListGui extends JPanel implements Runnable{
 
 
     }
-    ChatDao chatDao = new ChatDao();
+    ChatController chatController = new ChatController();
     //table에 넣을 버튼 만드는 클래스
     public class ChatTableCell extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
@@ -193,13 +189,13 @@ public class FriendListGui extends JPanel implements Runnable{
                 String selectRoom="1:1 채팅";
                 sendMsg("151|"+userInfo.userName);
                 sendMsg("203|"+selectRoom);
-                int chatRoomId=chatDao.getIdByTitle(selectRoom);
+                int chatRoomId= chatController.getIdByTitle(selectRoom);
                 cg.setTitle("채팅방-[" + selectRoom + "]");
                 cg.ta.setText("");
                 setVisible(false);
                 cg.setVisible(true);
                 ArrayList<GetChatMessageRes> arr;
-                arr=chatDao.readMessage(chatRoomId);
+                arr= chatController.readMessage(chatRoomId);
 
                 for(GetChatMessageRes getChatMessageRes :arr){
                     cg.ta.append("["+ getChatMessageRes.getName()+"]▶ "+ getChatMessageRes.getMessage());
@@ -256,13 +252,13 @@ public class FriendListGui extends JPanel implements Runnable{
             jb = new JButton("삭제");
 
             jb.addActionListener(e -> {
-                int friendId= userDao.getUserPK((String) friendListTable.getValueAt(friendListTable.getSelectedRow(), 0));
+                int friendId= userController.getUserPK((String) friendListTable.getValueAt(friendListTable.getSelectedRow(), 0));
                 String friendName=(String) friendListTable.getValueAt(friendListTable.getSelectedRow(), 1);
 
-                userDao.deleteUser(userInfo.idx,friendId);
-                userDao.deleteUser(friendId,userInfo.idx);
+                userController.deleteUser(userInfo.idx,friendId);
+                userController.deleteUser(friendId,userInfo.idx);
                 model.setNumRows(0);
-                model=userDao.importFriendList(userInfo.idx, model);
+                model= userController.importFriendList(userInfo.idx, model);
                 JOptionPane.showMessageDialog
                         (null, friendName+"님이 삭제 되었습니다.");
             });
@@ -298,7 +294,7 @@ public class FriendListGui extends JPanel implements Runnable{
             jb = new JButton("정보");
 
             jb.addActionListener(e -> {
-                int friendId= userDao.getUserPK((String) friendListTable.getValueAt(friendListTable.getSelectedRow(), 0));
+                int friendId= userController.getUserPK((String) friendListTable.getValueAt(friendListTable.getSelectedRow(), 0));
                 new FriendInfoGui(friendId);
             });
 
@@ -400,7 +396,7 @@ public class FriendListGui extends JPanel implements Runnable{
 
 
                     case "203"://대화방 입장
-                        cg.ta.append("");
+                        cg.ta.append("=========["+msgs[1]+"]님 입장=========\n");
 
                         break;
 

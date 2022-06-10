@@ -1,23 +1,24 @@
-package dao;
+package Controller;
 
 
-import Chatting.ChatClient;
+import Server.DBConnector;
+import gui.MainGui;
 import model.GetVoteDetailRes;
-import model.GetVoteUser;
+import model.GetVoteUserRes;
 
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class VoteDao {
+public class VoteController {
     DBConnector dbConnector=new DBConnector();
     PreparedStatement stmt;
     ResultSet rs;
     Statement st;
 
 
-    ChatClient.UserInfo userInfo = new ChatClient.UserInfo();
-    ChatClient.ChatRoomInfo chatRoomInfo = new ChatClient.ChatRoomInfo();
+    MainGui.UserInfo userInfo = new MainGui.UserInfo();
+    MainGui.ChatRoomInfo chatRoomInfo = new MainGui.ChatRoomInfo();
 
     public void createVote(int chatRoomIdx,String title, String content,int userIdx){
 
@@ -138,8 +139,8 @@ public class VoteDao {
         return false;
     }
 
-    public ArrayList<GetVoteUser> getUser(int voteId) {
-        ArrayList<GetVoteUser> arr = new ArrayList<>();
+    public ArrayList<GetVoteUserRes> getUser(int voteId) {
+        ArrayList<GetVoteUserRes> arr = new ArrayList<>();
         String readMessageQuery ="select concat('이름 : ',userName,' ID :',userId) as 'voteUser' from User  join VoteUserList on User.id=VoteUserList.userIdx\n" +
                 "where voteIdx=?;";
 
@@ -149,7 +150,7 @@ public class VoteDao {
             stmt.setInt(1,voteId);
             rs=stmt.executeQuery();
             while(rs.next()){
-                arr.add(new GetVoteUser(rs.getString(1)));
+                arr.add(new GetVoteUserRes(rs.getString(1)));
             }
             stmt.close();
             rs.close();

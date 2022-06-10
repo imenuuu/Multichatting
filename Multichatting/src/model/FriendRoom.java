@@ -1,6 +1,6 @@
 package model;
 
-import Chatting.ChatController;
+import Server.ServerController;
 
 import java.util.Vector;
 
@@ -25,25 +25,13 @@ public class FriendRoom {
         this.title = title;
     }
 
-    public int getCount() {
-        return count;
-    }
 
-    public void setCount(int count) {
-        this.count = count;
-    }
 
-    public String getBoss() {
-        return boss;
-    }
 
-    public void setBoss(String boss) {
-        this.boss = boss;
-    }
 
     public String boss;//방장(방 개설자)
 
-    public Vector<ChatController> userV;//userV: 같은 방에 접속한 Client정보 저장
+    public Vector<ServerController> userV;//userV: 같은 방에 접속한 Client정보 저장
 
     public FriendRoom(int id, String title, int count, String boss) {
         this.id=id;

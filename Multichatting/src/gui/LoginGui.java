@@ -1,7 +1,6 @@
 package gui;
 
-import Chatting.ChatClient;
-import dao.UserDao;
+import Controller.UserController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +10,7 @@ import java.awt.event.ActionListener;
 public class LoginGui extends JFrame {
 
 
-    UserDao userDao=new UserDao();
+    UserController userController =new UserController();
     public LoginGui() {
 
         setTitle("객패개패 채팅프로그램");
@@ -107,7 +106,7 @@ public class LoginGui extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String myId = jtf1.getText();
                 String myPwd = new String(jtf2.getPassword());
-                Boolean logIn=userDao.UserLogin(myId,myPwd);
+                Boolean logIn= userController.UserLogin(myId,myPwd);
                 if(myId.isEmpty()){
                     JOptionPane.showMessageDialog
                             (null, "아이디를 입력해주세요.");
@@ -119,12 +118,12 @@ public class LoginGui extends JFrame {
 
 
                 else if(logIn) {
-                    userDao.UserUpdateStatus(myId);
+                    userController.UserUpdateStatus(myId);
                     JOptionPane.showMessageDialog
                             (null, "로그인 성공");
-                    String myName=userDao.getUserName(myId);
-                    int id=userDao.getUserPK(myId);
-                    new ChatClient(myName,myId,id);
+                    String myName= userController.getUserName(myId);
+                    int id= userController.getUserPK(myId);
+                    new MainGui(myName,myId,id);
                     dispose();
                 }
                 else if(logIn==false) {

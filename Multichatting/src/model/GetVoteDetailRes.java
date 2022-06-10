@@ -13,9 +13,6 @@ public class GetVoteDetailRes {
         return content;
     }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
 
     public GetVoteDetailRes(String title, String content) {
         this.title = title;

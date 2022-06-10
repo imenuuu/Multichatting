@@ -1,5 +1,6 @@
-package dao;
+package Controller;
 
+import Server.DBConnector;
 import model.GetFriendRes;
 import model.GetUserRes;
 import model.User;
@@ -8,7 +9,7 @@ import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class UserDao {
+public class UserController {
     DBConnector dbConnector=new DBConnector();
     PreparedStatement stmt;
     ResultSet rs;

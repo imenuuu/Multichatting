@@ -1,5 +1,6 @@
-package dao;
+package Controller;
 
+import Server.DBConnector;
 import model.GetChatMessageRes;
 import model.GetRoomRes;
 
@@ -7,7 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Vector;
 
-public class ChatDao {
+public class ChatController {
     DBConnector dbConnector=new DBConnector();
     PreparedStatement pstmt;
     ResultSet rs;

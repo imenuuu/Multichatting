@@ -1,6 +1,6 @@
 package gui;
 
-import dao.UserDao;
+import Controller.UserController;
 import model.GetUserRes;
 
 import javax.swing.*;
@@ -12,12 +12,12 @@ import java.util.ArrayList;
 
 public class FriendInfoGui extends JFrame {
 
-    UserDao userDao = new UserDao();
+    UserController userController = new UserController();
     public FriendInfoGui(int userId) {
         ArrayList<GetUserRes> arr;
-        arr=userDao.getFriendInfo(userId);
-        String userLoginId=userDao.getUserId(userId);
-        setTitle(userDao.getUserName(userLoginId)+"님 정보");
+        arr= userController.getFriendInfo(userId);
+        String userLoginId= userController.getUserId(userId);
+        setTitle(userController.getUserName(userLoginId)+"님 정보");
 
         // 1. 컴포넌트들을 만들어 보자.
         JLabel title =

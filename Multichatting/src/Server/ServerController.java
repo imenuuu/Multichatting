@@ -1,6 +1,6 @@
-package Chatting;
+package Server;
 
-import dao.UserDao;
+import Controller.UserController;
 import model.FriendRoom;
 import model.Room;
 
@@ -14,7 +14,7 @@ import java.util.Vector;
 
 
 
-public class ChatController extends Thread{
+public class ServerController extends Thread{
 
     //Chatting.Service == 접속 클라이언트 한명!!
 
@@ -32,9 +32,9 @@ public class ChatController extends Thread{
 
 
 
-    Vector<ChatController> allV;//모든 사용자(대기실사용자 + 대화방사용자)
+    Vector<ServerController> allV;//모든 사용자(대기실사용자 + 대화방사용자)
 
-    Vector<ChatController> waitV;//대기실 사용자
+    Vector<ServerController> waitV;//대기실 사용자
 
     Vector<Room> roomV;//개설된 대화방 model.Room-vs(Vector) : 대화방사용자
 
@@ -48,10 +48,10 @@ public class ChatController extends Thread{
     String nickName;
     int userId;
 
-    UserDao userDao=new UserDao();
+    UserController userController =new UserController();
 
 
-    public ChatController(Socket s, Server server) {
+    public ServerController(Socket s, Server server) {
 
         allV=server.allV;
 
@@ -415,7 +415,7 @@ public class ChatController extends Thread{
 
             //"길동,라임,주원"
 
-            ChatController ser= myRoom.userV.get(i);
+            ServerController ser= myRoom.userV.get(i);
 
             str += ser.nickName;
 
@@ -445,7 +445,7 @@ public class ChatController extends Thread{
 
                 for(int j=0; j<room.userV.size(); j++){
 
-                    ChatController ser= room.userV.get(j);
+                    ServerController ser= room.userV.get(j);
 
                     str += ser.nickName;
 
@@ -473,7 +473,7 @@ public class ChatController extends Thread{
 
             //"길동,라임,주원"
 
-            ChatController ser= waitV.get(i);
+            ServerController ser= waitV.get(i);
 
             str += ser.nickName;
 
@@ -516,11 +516,11 @@ public class ChatController extends Thread{
 
         for(int i=0; i<allV.size(); i++){//벡터 인덱스
 
-            ChatController chatController = allV.get(i); //각각의 클라이언트 얻어오기
+            ServerController serverController = allV.get(i); //각각의 클라이언트 얻어오기
 
             try {
 
-                chatController.messageTo(msg);
+                serverController.messageTo(msg);
 
             } catch (IOException e) {
 
@@ -542,11 +542,11 @@ public class ChatController extends Thread{
 
         for(int i=0; i<waitV.size(); i++){//벡터 인덱스
 
-            ChatController chatController = waitV.get(i); //각각의 클라이언트 얻어오기
+            ServerController serverController = waitV.get(i); //각각의 클라이언트 얻어오기
 
             try {
 
-                chatController.messageTo(msg);
+                serverController.messageTo(msg);
 
             } catch (IOException e) {
 
@@ -568,11 +568,11 @@ public class ChatController extends Thread{
 
         for(int i=0; i< myRoom.userV.size(); i++){//벡터 인덱스
 
-            ChatController chatController = myRoom.userV.get(i); //각각의 클라이언트 얻어오기
+            ServerController serverController = myRoom.userV.get(i); //각각의 클라이언트 얻어오기
 
             try {
 
-                chatController.messageTo(msg);
+                serverController.messageTo(msg);
 
             } catch (IOException e) {
 
@@ -592,11 +592,11 @@ public class ChatController extends Thread{
 
         for(int i=0; i< friendRoom.userV.size(); i++){//벡터 인덱스
 
-            ChatController chatController = friendRoom.userV.get(i); //각각의 클라이언트 얻어오기
+            ServerController serverController = friendRoom.userV.get(i); //각각의 클라이언트 얻어오기
 
             try {
 
-                chatController.messageTo(msg);
+                serverController.messageTo(msg);
 
             } catch (IOException e) {
 

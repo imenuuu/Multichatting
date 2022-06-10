@@ -1,6 +1,6 @@
 package gui;
 
-import dao.UserDao;
+import Controller.UserController;
 import model.GetUserRes;
 
 import javax.swing.*;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class UserInfoGui extends JFrame {
     public UserInfoGui(int userIdx) {
-            UserDao userDao=new UserDao();
+            UserController userController =new UserController();
 
             setTitle("객패개패 채팅프로그램");
 
@@ -26,7 +26,7 @@ public class UserInfoGui extends JFrame {
             JButton cancel = new JButton("취소");
 
             ArrayList<GetUserRes> arr;
-            arr=userDao.getFriendInfo(userIdx);
+            arr= userController.getFriendInfo(userIdx);
 
             JTextField name = new JTextField(10);
             JTextField lolRank = new JTextField(10);
@@ -228,7 +228,7 @@ public class UserInfoGui extends JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
 
-                    String myId=userDao.getUserId(userIdx);
+                    String myId= userController.getUserId(userIdx);
                     String myName = finalName.getText();
                     String myLolNickName = finalLolNickName.getText();
                     String myLolRank= finalLolRank.getText();
@@ -247,7 +247,7 @@ public class UserInfoGui extends JFrame {
                                 (null, "이름을 입력해 주세요.");
                     }
                    else{
-                        userDao.updateUserInfo(getUserRes,userIdx);
+                        userController.updateUserInfo(getUserRes,userIdx);
                         JOptionPane.showMessageDialog
                                 (null, "정보수정 완료 되었습니다.");
                         dispose();

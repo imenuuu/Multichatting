@@ -1,6 +1,6 @@
 package gui;
 
-import dao.VoteDao;
+import Controller.VoteController;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -17,7 +17,7 @@ public class VoteListGui extends JFrame {
     Object[][] ob = new Object[0][4];
 
 
-    VoteDao voteDao=new VoteDao();
+    VoteController voteController =new VoteController();
     public static class Chat{
         int userId;
         int roomId;
@@ -54,7 +54,7 @@ public class VoteListGui extends JFrame {
         voteListTable.getColumnModel().getColumn(4).setCellRenderer(new VoteDeleteCell());
         voteListTable.getColumnModel().getColumn(4).setCellEditor(new VoteDeleteCell());
 
-        model=voteDao.getVoteList(roomId,model);
+        model= voteController.getVoteList(roomId,model);
 
         setVisible(true);
     }
@@ -103,15 +103,15 @@ public class VoteListGui extends JFrame {
             jb = new JButton("삭제");
 
             jb.addActionListener(e -> {
-                int userId=voteDao.getVoteMaster((Integer) voteListTable.getValueAt(voteListTable.getSelectedRow(),0));
+                int userId= voteController.getVoteMaster((Integer) voteListTable.getValueAt(voteListTable.getSelectedRow(),0));
                 if(userId==chat.userId){
-                    voteDao.deleteVoteUser((Integer) voteListTable.getValueAt(voteListTable.getSelectedRow(),0));
-                    voteDao.deleteVote((Integer) voteListTable.getValueAt(voteListTable.getSelectedRow(),0));
+                    voteController.deleteVoteUser((Integer) voteListTable.getValueAt(voteListTable.getSelectedRow(),0));
+                    voteController.deleteVote((Integer) voteListTable.getValueAt(voteListTable.getSelectedRow(),0));
                     JOptionPane.showMessageDialog
                             (null, "투표가 삭제되었습니다.");
 
                     model.setNumRows(0);
-                    model=voteDao.getVoteList(chat.roomId,model);
+                    model= voteController.getVoteList(chat.roomId,model);
                 }
                 else{
                     JOptionPane.showMessageDialog

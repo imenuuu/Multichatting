@@ -1,8 +1,7 @@
-package Chatting;
+package gui;
 
-import dao.ChatDao;
-import dao.UserDao;
-import gui.*;
+import Controller.ChatController;
+import Controller.UserController;
 import model.GetChatMessageRes;
 
 import javax.swing.*;
@@ -20,7 +19,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 
-public class ChatClient extends JFrame implements ActionListener, Runnable{
+public class MainGui extends JFrame implements ActionListener, Runnable{
 
     JList<String> roomInfo,roomInwon,waitInfo;
 
@@ -52,8 +51,8 @@ public class ChatClient extends JFrame implements ActionListener, Runnable{
 
     ImageIcon icon;
 
-    UserDao userDao=new UserDao();
-    ChatDao chatDao=new ChatDao();
+    UserController userController =new UserController();
+    ChatController chatController =new ChatController();
 
     public static class UserInfo{
         public int id;
@@ -72,7 +71,7 @@ public class ChatClient extends JFrame implements ActionListener, Runnable{
     ChatRoomJoin chatRoomJoin=new ChatRoomJoin();
     ChatRoomInfo chatRoomInfo=new ChatRoomInfo();
     UserInfo userInfo=new UserInfo();
-    public ChatClient(String myName, String myId, int id) {
+    public MainGui(String myName, String myId, int id) {
         setTitle("객패개패팀 채팅프로그램");
 
         icon = new ImageIcon("img/main.png"); //이미지 불러오기
@@ -252,13 +251,13 @@ public class ChatClient extends JFrame implements ActionListener, Runnable{
 
                     break;
                 }
-                else if (chatDao.checkTitle(title)) {
+                else if (chatController.checkTitle(title)) {
                     JOptionPane.showMessageDialog
                             (null, "채팅방 이름이 중복 되었습니다.");
                     break;
 
                 } else {
-                    chatRoomInfo.id = chatDao.createChat(title,userInfo.userName);
+                    chatRoomInfo.id = chatController.createChat(title,userInfo.userName);
                     //방 이름 설정 후 저장
                     chatRoomInfo.roomName = title;
 
@@ -278,8 +277,8 @@ public class ChatClient extends JFrame implements ActionListener, Runnable{
                     cc.ta.setText("");
                     cc.setVisible(true); //대화방이동
                     cc.chatRoomId=chatRoomInfo.id;
-                    chatDao.insertRoom(userInfo.id, chatRoomInfo.id);
-                    chatDao.increateRoomCount(chatRoomInfo.id);
+                    chatController.insertRoom(userInfo.id, chatRoomInfo.id);
+                    chatController.increateRoomCount(chatRoomInfo.id);
                     break;
 
                 }
@@ -311,7 +310,7 @@ public class ChatClient extends JFrame implements ActionListener, Runnable{
             //방정보 객체에 저장
             String title=sendMsg(selectedRoom);
 
-            chatRoomInfo.id=chatDao.getIdByTitle(title);
+            chatRoomInfo.id= chatController.getIdByTitle(title);
 
             cc.chatRoomId=chatRoomInfo.id;
 
@@ -321,11 +320,11 @@ public class ChatClient extends JFrame implements ActionListener, Runnable{
 
             cc.ta.setText("");
             cc.setVisible(true);
-            chatDao.insertRoom(userInfo.id,chatRoomInfo.id);
+            chatController.insertRoom(userInfo.id,chatRoomInfo.id);
             ArrayList<GetChatMessageRes> arr;
-            arr=chatDao.readMessage(chatRoomInfo.id);
+            arr= chatController.readMessage(chatRoomInfo.id);
 
-            chatDao.increateRoomCount(chatRoomInfo.id);
+            chatController.increateRoomCount(chatRoomInfo.id);
 
             for(GetChatMessageRes getChatMessageRes :arr){
                 cc.ta.append("["+ getChatMessageRes.getName()+"]▶ "+ getChatMessageRes.getMessage());
@@ -342,14 +341,14 @@ public class ChatClient extends JFrame implements ActionListener, Runnable{
             cc.setVisible(false);
 
             setVisible(true);
-            chatDao.exitRoom(userInfo.id,chatRoomInfo.id);
-            chatDao.decreateRoomCount(chatRoomInfo.id);
+            chatController.exitRoom(userInfo.id,chatRoomInfo.id);
+            chatController.decreateRoomCount(chatRoomInfo.id);
 
         }
         else if(ob==cc.sendTF){//(TextField입력)메시지 보내기 요청
 
             String msg = cc.sendTF.getText();
-            chatDao.insertMessage(chatRoomInfo.id,userInfo.id,msg);
+            chatController.insertMessage(chatRoomInfo.id,userInfo.id,msg);
 
             if(msg.length()>0){
 
@@ -367,8 +366,8 @@ public class ChatClient extends JFrame implements ActionListener, Runnable{
             new VoteListGui(userInfo.id,chatRoomInfo.id);
         }
         else if(ob==bt_exit){//나가기(프로그램종료) 요청
-            chatDao.exitRoom(userInfo.id,chatRoomInfo.id);
-            userDao.userLogOut(userInfo.userId);
+            chatController.exitRoom(userInfo.id,chatRoomInfo.id);
+            userController.userLogOut(userInfo.userId);
             dispose();
             new LoginGui();
 
@@ -484,7 +483,7 @@ public class ChatClient extends JFrame implements ActionListener, Runnable{
                     case "200"://대화방 입장
 
                         cc.ta.append("");
-
+                        cc.ta.append("=========["+msgs[1]+"]님 입장=========\n");
                         break;
 
 

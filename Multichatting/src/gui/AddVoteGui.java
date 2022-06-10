@@ -4,7 +4,7 @@ package gui;
 
 
 
-import dao.VoteDao;
+import Controller.VoteController;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -26,7 +26,7 @@ public class AddVoteGui extends JFrame {
     int roomIdx;
 
 
-    VoteDao voteDao=new VoteDao();
+    VoteController voteController =new VoteController();
 
     public AddVoteGui(int userIdx, int roomIdx){
 
@@ -79,7 +79,7 @@ public class AddVoteGui extends JFrame {
                     JOptionPane.showMessageDialog
                             (null, "내용을 입력해주세요.");
                 } else{
-                    voteDao.createVote(roomIdx,voteTitle,voteContent,userIdx);
+                    voteController.createVote(roomIdx,voteTitle,voteContent,userIdx);
                     JOptionPane.showMessageDialog
                             (null, "투표 생성 완료");
                     setVisible(false);

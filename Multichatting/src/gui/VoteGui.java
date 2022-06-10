@@ -1,8 +1,8 @@
 package gui;
 
-import dao.VoteDao;
+import Controller.VoteController;
 import model.GetVoteDetailRes;
-import model.GetVoteUser;
+import model.GetVoteUserRes;
 
 import javax.swing.*;
 import java.awt.event.ItemEvent;
@@ -29,7 +29,7 @@ public class VoteGui extends JFrame {
 
     }
     Vote vote=new Vote();
-    VoteDao voteDao=new VoteDao();
+    VoteController voteController =new VoteController();
     public VoteGui(int userId,int voteId){
         vote.userId=userId;
         vote.voteId=voteId;
@@ -78,16 +78,16 @@ public class VoteGui extends JFrame {
         add(p);
 
         ArrayList<GetVoteDetailRes> arr;
-        arr=voteDao.getVoteDetail(voteId);
+        arr= voteController.getVoteDetail(voteId);
         for(GetVoteDetailRes getVoteDetailRes :arr){
             title.append(getVoteDetailRes.getTitle());
             contents.append(getVoteDetailRes.getContent());
         }
 
-        ArrayList<GetVoteUser> userArray;
-        userArray=voteDao.getUser(voteId);
-        for(GetVoteUser getVoteUser:userArray){
-            userList.append(getVoteUser.getUser());
+        ArrayList<GetVoteUserRes> userArray;
+        userArray= voteController.getUser(voteId);
+        for(GetVoteUserRes getVoteUserRes :userArray){
+            userList.append(getVoteUserRes.getUser());
             userList.append("\n");
         }
         setVisible(true);
@@ -105,14 +105,14 @@ public class VoteGui extends JFrame {
         @Override
         public void itemStateChanged(ItemEvent e) {
             if(voteRadio.isSelected()){
-                if(voteDao.checkVote(vote.voteId,vote.userId)) {
+                if(voteController.checkVote(vote.voteId,vote.userId)) {
                     JOptionPane.showMessageDialog
                             (null, "이미 투표하였습니다.");
                 }else{
 
                     JOptionPane.showMessageDialog
                             (null, "투표완료");
-                    voteDao.insertVote(vote.voteId, vote.userId);
+                    voteController.insertVote(vote.voteId, vote.userId);
                     dispose();
                 }
             }

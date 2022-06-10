@@ -1,12 +1,12 @@
 package model;
 
-public class GetVoteUser {
+public class GetVoteUserRes {
     public String getUser() {
         return user;
     }
 
 
-    public GetVoteUser(String user) {
+    public GetVoteUserRes(String user) {
         this.user = user;
     }
 

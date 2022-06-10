@@ -1,6 +1,6 @@
-package Chatting;
+package Server;
 
-import dao.ChatDao;
+import Controller.ChatController;
 import model.FriendRoom;
 import model.GetRoomRes;
 import model.Room;
@@ -20,15 +20,15 @@ public class Server implements Runnable{
 
 
 
-    Vector<ChatController> allV;//모든 사용자(대기실사용자 + 대화방사용자)
+    Vector<ServerController> allV;//모든 사용자(대기실사용자 + 대화방사용자)
 
-    Vector<ChatController> waitV;//대기실 사용자
+    Vector<ServerController> waitV;//대기실 사용자
 
     Vector<Room> roomV;//개설된 대화방 model.Room-vs(Vector) : 대화방사용자
     Vector<FriendRoom> friendRoomV;
 
 
-    ChatDao chatDao=new ChatDao();
+    ChatController chatController =new ChatController();
     Room myRoom;
     FriendRoom friendRoom;
 
@@ -50,7 +50,7 @@ public class Server implements Runnable{
         friendRoomV.add(friendRoom);
 
         Vector<GetRoomRes> arr;
-        arr=chatDao.getRoomList();
+        arr= chatController.getRoomList();
         for (GetRoomRes getRoomRes :arr){
             myRoom=new Room();
             myRoom.title= getRoomRes.getTitle();
@@ -91,7 +91,7 @@ public class Server implements Runnable{
 
                 //s: 접속한 클라이언트의 소켓정보
 
-                ChatController ser = new ChatController(s, this);
+                ServerController ser = new ServerController(s, this);
 
                 //allV.add(ser);//전체사용자에 등록
 
